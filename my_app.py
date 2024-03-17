@@ -60,7 +60,7 @@ def classify_dicom(filepath):
         else:
             result_text = "Данное изображение соответствует 3 (или 4) категории по шкале BI-RADS_MRT. Требуется консультация специалиста."
         
-        return result_text
+        return img, result_text
     
 # Загрузка предварительно обученной модели ResNet50
 resnet50 = models.resnet50(pretrained=True)
@@ -110,8 +110,8 @@ def main():
 
         # Отображаем спиннер перед классификацией изображения
         with st.spinner('Классификация изображения...'):
-            # Классифицируем изображение и выводим результат
-            classification_result = classify_dicom(uploaded_filepath)
+            # Классифицируем изображение и получаем изображение и результат классификации
+            image, classification_result = classify_dicom(uploaded_filepath)
             st.write("### Заключение  классификатора:")
             # Форматируем вывод в цветной блок
             if "здоровое" in classification_result.lower() or "1 (или 2)" in classification_result:
@@ -123,6 +123,9 @@ def main():
             else:
                 st.markdown('<div style="background-color: #FF5733; padding: 10px; border-radius: 5px;">'
                             '<p style="color: white;">{}</p></div>'.format(classification_result), unsafe_allow_html=True)
+
+            # Отображаем изображение
+            st.image(image, caption='Обработанное изображение', use_column_width=True)
 
 if __name__ == '__main__':
     main()
