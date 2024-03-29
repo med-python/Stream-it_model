@@ -1,15 +1,18 @@
 import streamlit as st
 import os
-from werkzeug.utils import secure_filename
-import pydicom
-import numpy as np
+import zipfile
 from PIL import Image
+import numpy as np
 import torch
 import torchvision.transforms as transforms
 import torch.nn as nn
 import torchvision.models as models
+from werkzeug.utils import secure_filename
+import pydicom
 import paramiko
 import pandas as pd
+import tempfile
+import shutil
 
 def download_model(remote_path, local_path, key_path):
     ssh = paramiko.SSHClient()
@@ -21,15 +24,27 @@ def download_model(remote_path, local_path, key_path):
     sftp.close()
     ssh.close()
 
-# Загрузка модели
+
+# Загрузка предварительно обученной модели ResNet50
 remote_path = '/home/ubuntu/service/models/resnet50_modelmammae.pth'
-local_path = 'resnet50_modelmammae.pth'  # Локальный путь, куда будет сохранена загруженная модель
-
-key_path = "vkr.pem"  # Используйте относительный путь к файлу ключа
-
+local_path = 'resnet50_modelmammae.pth'
+key_path = "vkr.pem"
 download_model(remote_path, local_path, key_path)
 
-# Функция классификации DICOM файла
+# Загрузка предварительно обученной модели ResNet50
+resnet50 = models.resnet50(pretrained=True)
+num_ftrs = resnet50.fc.in_features
+resnet50.fc = nn.Sequential(
+    nn.Linear(num_ftrs, 256),
+    nn.ReLU(),
+    nn.Dropout(0.5),
+    nn.Linear(256, 1),
+    nn.Sigmoid()
+)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+resnet50.to(device)
+
+# Функция для классификации DICOM файла
 def classify_dicom(filepath):
     # Функция нормализации и визуализации DICOM
     def normalize_visualize_dicom_1(dcm_file):
@@ -60,72 +75,36 @@ def classify_dicom(filepath):
         else:
             result_text = "Данное изображение соответствует 3 (или 4) категории по шкале BI-RADS_MRT. Требуется консультация специалиста."
         
-        return img, result_text
-    
-# Загрузка предварительно обученной модели ResNet50
-resnet50 = models.resnet50(pretrained=True)
-num_ftrs = resnet50.fc.in_features
-resnet50.fc = nn.Sequential(
-    nn.Linear(num_ftrs, 256),
-    nn.ReLU(),
-    nn.Dropout(0.5),
-    nn.Linear(256, 1),
-    nn.Sigmoid()
-)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-resnet50.to(device)
-
-def get_dicom_info(dicom_file_path):
-    dicom_info = {}
-    dicom = pydicom.dcmread(dicom_file_path)
-    dicom_info['PatientName'] = dicom.PatientName
-    dicom_info['PatientID'] = dicom.PatientID
-    dicom_info['StudyDescription'] = dicom.StudyDescription
-    dicom_info['Modality'] = dicom.Modality
-    dicom_info['Rows'] = dicom.Rows
-    dicom_info['Columns'] = dicom.Columns
-    dicom_info['PixelSpacing'] = dicom.PixelSpacing
-    dicom_info['PatientAge'] = dicom.PatientAge
-    dicom_info['Manufacturer'] = dicom.Manufacturer
-    dicom_info['InstitutionName'] = dicom.InstitutionName
-    return dicom_info
+        return result_text
 
 def main():
     st.title('Классификация маммографических изображений')
-    uploaded_file = st.sidebar.file_uploader("Загрузите файл DICOM", type=['dcm'])
+    uploaded_file = st.sidebar.file_uploader("Загрузите zip-архив с файлами DICOM", type=['zip'])
 
     if uploaded_file is not None:
-        # Сохраняем файл DICOM локально
-        uploaded_filepath = os.path.join('uploads', secure_filename(uploaded_file.name))
-        with open(uploaded_filepath, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+        # Создаем временную директорию для распаковки архива
+        temp_dir = tempfile.mkdtemp()
+        with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
 
-        # Отображаем информацию о файле DICOM
-        dicom_info = get_dicom_info(uploaded_filepath)
-        st.write("### Информация о файле DICOM:")
-        # Преобразуем словарь в список кортежей
-        dicom_info_tuples = [(key, value) for key, value in dicom_info.items()]
-        df = pd.DataFrame(dicom_info_tuples, columns=['Параметр', 'Значение'])
-        st.table(df)
+        # Получаем список всех файлов DICOM в директории
+        dicom_files = [os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.endswith('.dcm')]
 
-        # Отображаем спиннер перед классификацией изображения
-        with st.spinner('Классификация изображения...'):
-            # Классифицируем изображение и получаем изображение и результат классификации
-            image, classification_result = classify_dicom(uploaded_filepath)
-            st.write("### Заключение  классификатора:")
-            # Форматируем вывод в цветной блок
-            if "здоровое" in classification_result.lower() or "1 (или 2)" in classification_result:
-                st.markdown('<div style="background-color: #008000; padding: 10px; border-radius: 5px;">'
-                            '<p style="color: white;">{}</p></div>'.format(classification_result), unsafe_allow_html=True)
-            elif "3 (или 4)" in classification_result:
-                st.markdown('<div style="background-color: #FF33FF; padding: 10px; border-radius: 5px;">'
-                            '<p style="color: black;">{}</p></div>'.format(classification_result), unsafe_allow_html=True)
-            else:
-                st.markdown('<div style="background-color: #FF5733; padding: 10px; border-radius: 5px;">'
-                            '<p style="color: white;">{}</p></div>'.format(classification_result), unsafe_allow_html=True)
+        # Отображаем спиннер перед классификацией изображений
+        with st.spinner('Классификация изображений...'):
+            # Классифицируем каждое изображение
+            for dicom_file in dicom_files:
+                # Загружаем DICOM файл и получаем массив пикселей
+                dicom_data = pydicom.dcmread(dicom_file)
+                image_array = dicom_data.pixel_array
 
-            # Отображаем изображение
-            st.image(image, caption='Обработанное изображение', use_column_width=True)
+                # Классифицируем изображение и выводим результат классификации
+                classification_result = classify_dicom(image_array)
+                st.write("### Заключение классификатора:")
+                st.write(classification_result)
+
+        # Удаляем временную директорию после использования
+        shutil.rmtree(temp_dir)
 
 if __name__ == '__main__':
     main()
