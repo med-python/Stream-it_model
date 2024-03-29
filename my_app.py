@@ -91,7 +91,7 @@ def get_dicom_info(dicom_file_path):
     return dicom_info
 
 def main():
-    st.title('Классификация маммо изображений')
+    st.title('Классификация маммографических  изображений')
     uploaded_file = st.sidebar.file_uploader("Загрузите файл DICOM", type=['dcm'])
 
     if uploaded_file is not None:
