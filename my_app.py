@@ -44,8 +44,9 @@ resnet50.fc = nn.Sequential(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 resnet50.to(device)
 
-# Функция для классификации DICOM файла
 def classify_dicom(filepath):
+    print("Classifying DICOM file:", filepath)  # Консольный вывод для отслеживания классификации каждого файла
+
     # Функция нормализации и визуализации DICOM
     def normalize_visualize_dicom_1(dcm_file):
         dicom_file = pydicom.dcmread(dcm_file)
@@ -75,8 +76,8 @@ def classify_dicom(filepath):
         else:
             result_text = "Данное изображение соответствует 3 (или 4) категории по шкале BI-RADS_MRT. Требуется консультация специалиста."
         
+        print("Classification result:", result_text)  # Консольный вывод для результата классификации
         return result_text
-
 def main():
     st.title('Классификация маммографических изображений')
     uploaded_file = st.sidebar.file_uploader("Загрузите zip-архив с файлами DICOM", type=['zip'])
