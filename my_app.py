@@ -44,40 +44,42 @@ resnet50.fc = nn.Sequential(
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 resnet50.to(device)
 
-def classify_dicom(filepath):
-    print("Classifying DICOM file:", filepath)  # Консольный вывод для отслеживания классификации каждого файла
 
-    # Функция нормализации и визуализации DICOM
-    def normalize_visualize_dicom_1(dcm_file):
-        dicom_file = pydicom.dcmread(dcm_file)
-        dicom_array = dicom_file.pixel_array.astype(float)
-        normalized_dicom_array = ((np.maximum(dicom_array, 0))/dicom_array.max()) * 255.0
-        uint8_image = np.uint8(normalized_dicom_array)
-        return uint8_image
+def main():
+    st.title('Классификация маммографических изображений')
+    uploaded_file = st.sidebar.file_uploader("Загрузите zip-архив с файлами DICOM", type=['zip'])
 
-    # Классификация DICOM файла
-    image_1 = normalize_visualize_dicom_1(filepath)
-    if image_1 is not None:
-        transform = transforms.Compose([
-            transforms.Grayscale(num_output_channels=3),
-            transforms.Resize((224, 224)),
-            transforms.ToTensor()
-        ])
-        img = Image.fromarray(image_1)
-        img_tensor = transform(img)
-        img_tensor = img_tensor.unsqueeze(0)
-        resnet50.eval()
-        with torch.no_grad():
-            output = resnet50(img_tensor.to(device))
-            predicted_class = torch.round(output).item()
+    if uploaded_file is not None:
+        # Создаем временную директорию для распаковки архива
+        temp_dir = tempfile.mkdtemp()
+        with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir)
 
-        if predicted_class == 1:
-            result_text = "Данное изображение соответствует 1 (или 2) категории по шкале BI-RADS_MRT."
-        else:
-            result_text = "Данное изображение соответствует 3 (или 4) категории по шкале BI-RADS_MRT. Требуется консультация специалиста."
-        
-        print("Classification result:", result_text)  # Консольный вывод для результата классификации
-        return result_text
+        # Получаем список всех файлов DICOM в директории
+        dicom_files = [os.path.join(temp_dir, f) for f in os.listdir(temp_dir) if f.endswith('.dcm')]
+
+        # Отображаем спиннер перед классификацией изображений
+        with st.spinner('Классификация изображений...'):
+            # Классифицируем каждое изображение
+            for dicom_file in dicom_files:
+                # Загружаем DICOM файл и получаем массив пикселей
+                dicom_data = pydicom.dcmread(dicom_file)
+                image_array = dicom_data.pixel_array
+
+                # Классифицируем изображение и выводим результат классификации
+                print("Classifying DICOM file:", dicom_file)
+                classification_result = classify_dicom(image_array)
+                print("Classification result:", classification_result)
+                
+                st.write("### Заключение классификатора:")
+                st.write(classification_result)
+
+        # Удаляем временную директорию после использования
+        shutil.rmtree(temp_dir)
+
+
+
+
 def main():
     st.title('Классификация маммографических изображений')
     uploaded_file = st.sidebar.file_uploader("Загрузите zip-архив с файлами DICOM", type=['zip'])
