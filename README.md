@@ -27,9 +27,9 @@ This project contains a Flask web application for predicting outcomes using a mo
 
 The project consists of the following components:
 
-- [app.py](my_app.py): Flask application for serving the web interface.
+- [my_app.py](my_app.py): Flask application for serving the web interface.
 - [script_model.py](https://raw.githubusercontent.com/med-python/Classification_of_breast_cancer/main/script_model.py?token=GHSAT0AAAAAACOJ74RYUCU3UUUXPQZ4O6WOZPLFFSQ): Script containing the machine learning model. Note that the model files are not included in this repository.
-- [script_dcm_png_model.py](https://raw.githubusercontent.com/med-python/Classification_of_breast_cancer/main/script_dcm_png_model.py?token=GHSAT0AAAAAACOJ74RYRKRU7F2HMAZ5NFCUZPLFGPQ): Script that takes a DICOM file as input, loads the trained model, and generates predictions.
+- [requirements.txt](): Script that takes a DICOM file as input, loads the trained model, and generates predictions.
 - [uploads](): Folder for uploading DICOM files to be tested. The `script_dcm_png_model.py` script will access files from this folder.
 
 ## Usage
