@@ -46,15 +46,10 @@ To run Stream-it Model locally, follow these steps:
 
 3. Run the Streamlit app:
 ```bash
-streamlit run app.py
+streamlit run app.py```
 
 
 
-## Run the Flask application:
-   
-Access the web application in your browser at http://localhost:5000.
-
-Note: Make sure you have the trained model files available on your computer to use the script my_app.py
 
 ##    Authors
 
