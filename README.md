@@ -26,7 +26,7 @@ This project contains a Flask web application for predicting outcomes using a mo
 The project consists of the following components:
 
 - [my_app.py](my_app.py): Flask application for serving the web interface.
-- [requirements.txt](requirements.txt): Script that takes a DICOM file as input, loads the trained model, and generates predictions.
+- [requirements.txt](requirements.txt): application dependency file.
 - [uploads](): Folder for uploading DICOM files to be tested. The `script_dcm_png_model.py` script will access files from this folder.
 - [vkr.pem]():key for remote server
 
