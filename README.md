@@ -30,13 +30,14 @@ The project consists of the following components:
 - [uploads](): Folder for uploading DICOM files to be tested. 
 - [vkr.pem]():key for remote server
 
-## Usage
+## Installation
 
-To run the Flask application:
+To run My Streamlit Project locally, follow these steps:
 
-1. Install the required dependencies:
+1. Clone the repository:
    ```bash
-   pip install -r requirements.txt
+   git clone https://github.com/your_username/my-streamlit-project.git
+   cd my-streamlit-project
    
 ## Run the Flask application:
    
