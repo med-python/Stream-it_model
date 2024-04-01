@@ -42,7 +42,7 @@ To run the Flask application:
    
 Access the web application in your browser at http://localhost:5000.
 
-Note: Make sure you have the trained model files available on your computer to use the script_model.py and script_dcm_png_model.py scripts.
+Note: Make sure you have the trained model files available on your computer to use the script my_app.py
 
 ##    Authors
 
