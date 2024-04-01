@@ -1,5 +1,4 @@
-# Stream-it_model
-
+# Classification of breast cancer Project
 <a name="readme-top"></a>
 [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
 [!['Black'](https://img.shields.io/badge/code_style-black-black?style=for-the-badge)](https://github.com/psf/black)
@@ -19,7 +18,6 @@
 ![SciPy](https://img.shields.io/badge/SciPy-%230C55A5.svg?style=for-the-badge&logo=scipy&logoColor=%white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white)
 
-# Classification of breast cancer Project
 
 This project contains a Flask web application for predicting outcomes using a model trained on DICOM files.
 
