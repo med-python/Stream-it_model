@@ -19,16 +19,16 @@
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white)
 
 
-This project contains a Flask web application for predicting outcomes using a model trained on DICOM files.
+This project contains a Streamlit web application for predicting outcomes using a model trained on DICOM files.
 
 ## Description
 
 The project consists of the following components:
 
-- [my_app.py](my_app.py): Flask application for serving the web interface.
-- [requirements.txt](requirements.txt): application dependency file.
+- [my_app.py](my_app.py): Streamlit application for serving the web interface.
+- [requirements.txt](requirements.txt): Application dependency file.
 - [uploads](): Folder for uploading DICOM files to be tested. 
-- [vkr.pem]():key for remote server
+- [vkr.pem](): Key for remote server.
 
 ## Installation
 
@@ -39,15 +39,7 @@ To run Stream-it Model locally, follow these steps:
    git clone https://github.com/med-python/Stream-it_model.git
    cd Stream-it_model
 
-2. Install the required dependencies:
-```bash
-   pip install -r requirements.txt
-
-
-3. Run the Streamlit app:
-```bash
-streamlit run app.py```
-
+   
 
 
 
