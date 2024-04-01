@@ -40,11 +40,12 @@ To run Stream-it Model locally, follow these steps:
    cd Stream-it_model   
 
 
-2. User
+2.  User
 Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
+
 
 
 3. Run the Streamlit app:
