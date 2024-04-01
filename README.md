@@ -37,9 +37,14 @@ To run Stream-it Model locally, follow these steps:
 1. Clone the repository:
    ```bash
    git clone https://github.com/med-python/Stream-it_model.git
-   cd Stream-it_model
+   cd Stream-it_model   
 
-   
+
+2. User
+Install the required dependencies:
+
+```bash
+pip install -r requirements.txt
 
 
 
