@@ -47,6 +47,10 @@ Install the required dependencies:
 pip install -r requirements.txt
 
 
+3. Run the Streamlit app:
+```bash
+streamlit run my_app.py
+
 
 ##    Authors
 
@@ -56,5 +60,5 @@ pip install -r requirements.txt
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.tx](LICENSE.tx) file for details
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details
 
