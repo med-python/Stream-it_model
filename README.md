@@ -39,13 +39,16 @@ To run Stream-it Model locally, follow these steps:
    git clone https://github.com/med-python/Stream-it_model.git
    cd Stream-it_model
 
-Install the required dependencies:
+2. Install the required dependencies:
 ```bash
    pip install -r requirements.txt
 
-Run the Streamlit app:
+
+3. Run the Streamlit app:
 ```bash
 streamlit run app.py
+
+
 
 ## Run the Flask application:
    
