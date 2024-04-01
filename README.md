@@ -32,13 +32,21 @@ The project consists of the following components:
 
 ## Installation
 
-To run My Streamlit Project locally, follow these steps:
+To run Stream-it Model locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your_username/my-streamlit-project.git
-   cd my-streamlit-project
-   
+   git clone https://github.com/med-python/Stream-it_model.git
+   cd Stream-it_model
+
+Install the required dependencies:
+```bash
+   pip install -r requirements.txt
+
+Run the Streamlit app:
+```bash
+streamlit run app.py
+
 ## Run the Flask application:
    
 Access the web application in your browser at http://localhost:5000.
